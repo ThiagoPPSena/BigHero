@@ -14,49 +14,48 @@ class Email:
 
     def get_last_code(self):
         with Imbox(self.host, username=self.email, password=self.password) as imbox:
-            
             today = datetime.today().strftime("%d-%b-%Y")
             messages = imbox.messages(date__on=today)
 
-            disney_emails = [] 
+            disney_emails = []
+            codigos_vistos = set() 
 
             for uid, message in messages:
-
                 code = None
-                
                 subject = message.subject or ""
                 email_content = ""
 
                 if message.body['html']:
-                    email_content = message.body['html'][0]  
+                    email_content = message.body['html'][0]
                 elif message.body['plain']:
-                    email_content = message.body['plain'][0] 
+                    email_content = message.body['plain'][0]
 
                 email_soup = bs(email_content, "html.parser")
                 email_text = email_soup.get_text().strip()
-                email_text = re.sub(r'\n+', '\n', email_text)  
+                email_text = re.sub(r'\n+', '\n', email_text)
 
                 tds = email_soup.find_all("td")
 
                 for td in tds:
                     content = td.text.strip()
-                    
-                    
                     if content.isdigit():
                         code = content
+                        break
 
                 if "disney" in subject.lower() or "disney" in email_text.lower():
-                    disney_email = {
-                        "assunto": subject,
-                        "data": message.date,
-                        "código": code
-                    }
-                    disney_emails.append(disney_email)
+                    if code and code not in codigos_vistos:
+                        disney_email = {
+                            "assunto": subject,
+                            "data": message.date,
+                            "código": code
+                        }
+                        disney_emails.append(disney_email)
+                        codigos_vistos.add(code)
 
             if disney_emails:
-                last_disney_email = disney_emails[-1]
-                return last_disney_email 
+                return disney_emails[-1]
             else:
-                print("Nenhum e-mail da Disney encontrado nos últimos 30 min")
+                print("Nenhum e-mail da Disney com código encontrado hoje.")
+                return None
 
 email = Email()
