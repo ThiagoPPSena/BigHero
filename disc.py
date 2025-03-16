@@ -1,6 +1,9 @@
 import discord
 from discord.ext import commands
 from mail import email
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -24,14 +27,8 @@ async def codigo(ctx):
     await ctx.send(embed=embed, file=file)
 
 @bot.event
-async def on_ready():
-    channel = bot.get_channel(1330576115013783675)
-    if channel:
-        await channel.send("👋 Olá! Estou ativo neste canal!")
-
-@bot.event
 async def on_member_join(member):
-    channel = bot.get_channel(1350751211472556104)
+    channel = bot.get_channel(os.getenv('WELCOME_CHANNEL_ID'))
     if channel:
         embed = discord.Embed(
             title=f"👋 Bem-vindo(a), {member.name}!",
