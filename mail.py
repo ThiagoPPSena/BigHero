@@ -9,7 +9,6 @@ class Email:
         self.email = 'thiagopinto.sena@gmail.com'
         self.password = 'upzo gmmg lect lnbt' 
 
-
     def get_last_code(self):
         with Imbox(self.host, username=self.email, password=self.password) as imbox:
             
