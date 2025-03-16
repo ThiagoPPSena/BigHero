@@ -11,17 +11,18 @@ intents.members = True
 
 bot = commands.Bot(command_prefix='/', intents=intents)
 
-embed = discord.Embed(
+@bot.command()
+async def codigo(ctx):
+    embed = discord.Embed(
     title="Última email de código da Disney",
     description="📩 **Recuperado último email enviado de código de acesso único para o Disney+**",
     color=discord.Color.red() 
-)
-file = discord.File("assets/images/baymax.jpg", filename="baymax.jpg")
-embed.set_image(url="attachment://baymax.jpg")
-embed.set_footer(text="BigHero Bot • Código recuperado com sucesso!")
+    )
+    
+    file = discord.File("assets/images/baymax.jpg", filename="baymax.jpg")
+    embed.set_image(url="attachment://baymax.jpg")
+    embed.set_footer(text="BigHero Bot • Código recuperado com sucesso!")
 
-@bot.command()
-async def codigo(ctx):
     email_info = email.get_last_code()
     embed.add_field(name="📌 Código", value=f"```{email_info['código']}```", inline=False)
     await ctx.send(embed=embed, file=file)
